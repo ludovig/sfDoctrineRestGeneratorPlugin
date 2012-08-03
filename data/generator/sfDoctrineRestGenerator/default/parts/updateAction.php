@@ -49,8 +49,18 @@
 
     // retrieve the object
 <?php $primaryKey = Doctrine_Core::getTable($this->getModelClass())->getIdentifier() ?>
+<?php if (!is_array($primaryKey)): ?>
     $primaryKey = $request->getParameter('<?php echo $primaryKey ?>');
     $this->object = Doctrine_Core::getTable($this->model)->findOneBy<?php echo sfInflector::camelize($primaryKey) ?>($primaryKey);
+<?php else: ?>
+    $q = Doctrine::getTable($this->model)->createQuery('a');
+<?php foreach($primaryKey as $key): ?>
+    $key = $request->getParameter('<?php echo $key ?>');
+    $this->forward404Unless($key);
+    $q->andWhere('<?php echo $key ?> = ?', $key);
+<?php endforeach ?>
+    $this->object = $q->fetchOne();
+<?php endif ?>
     $this->forward404Unless($this->object);
 
     // update and save it
