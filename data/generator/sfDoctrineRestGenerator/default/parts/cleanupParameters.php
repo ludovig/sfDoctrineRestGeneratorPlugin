@@ -12,6 +12,17 @@
 
     $additional_params = <?php var_export($this->configuration->getValue('get.additional_params', array())); ?>;
 
+    // save additionalParams for later reuse
+    $additionalParams = array();
+    foreach ($additional_params as $name)
+    {
+      if (isset($params[$name]))
+      {
+        $additionalParams[$name] =  $params[$name];
+      }
+    }
+    $this->additionalParams = $additionalParams;
+
     foreach ($params as $name => $value)
     {
       if ((null === $value) || ('' === $value) || in_array($name, $additional_params))
